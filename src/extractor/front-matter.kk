@@ -30,7 +30,11 @@ pub fun parse_fm(file: path): <exn, fsys> post
   val input = read-text-file(file)
   val parts = split(input, "---", 3)
   val fields = parse_header(parts[1].expect("Invalid frontmatter file (no header): " ++ show(file)))
-  val title = fields.get("title").expect("No title in header for file: " ++ show(file))
+  val title = fields
+    .get("title")
+    .expect("No title in header for file: " ++ show(file))
+    .trim_chars("\"")
+    .replace-all("\\\"", "\"")
   val tags = fields
     .get("tags")
     .default("")
