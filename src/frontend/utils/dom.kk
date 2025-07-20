@@ -1,5 +1,5 @@
-extern set_body : (body: string) -> ()
-  js inline "document.body.innerHTML = #1"
+extern set_output : (container_id: string, body: string) -> ()
+  js inline "(document.getElementById(#1) || document.body).innerHTML = #2"
 
 extern set_element : (id: string, body: string) -> ()
   js inline "document.getElementById(#1).innerHTML = #2"

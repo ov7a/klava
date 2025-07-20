@@ -10,6 +10,11 @@ import utils/serde
 import core/index
 import core/search
 
+val search_container_id = "search_container"
+val query_id = "query"
+val results_id = "results"
+val data_path = "index.json"
+
 fun load(url: string): <asyncx, div> index
   val data = fetch_data(url)
   deserialize(data)
@@ -52,7 +57,7 @@ fun search_result(result: result): component-builder ()
 fun update_items(results_id: string, index: index, query: string): ()
   with handler
     final ctl throw-exn(error)
-      set_body("Error occurred " ++ error.show)
+      set_output(search_container_id, "Error occurred " ++ error.show)
   val results = search(index, query)
   val items = build
     results.foreach(search_result)
@@ -65,21 +70,18 @@ fun init(url: string): <asyncx, div> index
 pub fun main()
   with handler
     final ctl throw-exn(error)
-      set_body("Error occurred " ++ error.show)
+      set_output(search_container_id, "Error occurred " ++ error.show)
 
-  val query_id = "query"   
-  val results_id = "results" 
-
-  set_body("Loading...")
+  set_output(search_container_id, "Loading...")
   
   // why not? I don't want to rewrite all styles
   load_style("https://ov7a.github.io/assets/main.css")
   
   trace("loading index...")
-  val index = init("index.json")
+  val index = init(data_path)
   trace("index loaded")
 
-  set_body(layout(query_id, results_id).show)
+  set_output(search_container_id, layout(query_id, results_id).show)
   add_listener(query_id, "input") fn(event: any) ->
     val value = Jsobject(event).get-obj("target").get-string("value")
     update_items(results_id, index, value)
