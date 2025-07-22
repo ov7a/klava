@@ -70,7 +70,10 @@ fun init(url: string): <asyncx, div> index
 pub fun main()
   with handler
     final ctl throw-exn(error)
-      set_output(search_container_id, "Error occurred " ++ error.show)
+      val err_msg = match error.info
+        JSError(nested) -> "JS error happened: " ++ nested.show
+        _ -> "Unknown error happened: " ++ error.show
+      set_output(search_container_id, err_msg)
 
   set_output(search_container_id, "Loading...")
   

@@ -21,7 +21,7 @@ function install {
 
 mkdir -p "libs"
 cd "libs"
-install "https://github.com/koka-community/std" "std" "ab407af3d5fec8a4f48a0a897aacb41c4b556977"
+install "https://github.com/koka-community/std" "std" "aaf74a35cfa8bf805e1251818c1f956a995ecb5c"
 rm -rf ../std
 mv std .. # because it has self-references. and to move it upper in order of includes
 install "https://github.com/koka-community/html" "html" "c60685deaa95290a24868b95da258ae79670bbc9"
