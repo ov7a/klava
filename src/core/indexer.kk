@@ -28,7 +28,7 @@ fun update_terms(
   current.merge(terms_map, fn(ti1, ti2) ->
     Term_index(
       total = ti1.total + ti2.total,
-      docs = ti1.docs.merge(ti2.docs, (+))
+      docs = ti1.docs.merge(ti2.docs, int/(+))
     )
   )
 

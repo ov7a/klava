@@ -5,9 +5,9 @@
 import std/data/json
 import std/num/float64
 import std/core/undiv
+import std/data/buffer
 
 import utils/map
-import utils/buffer
 
 type state
   Start
@@ -22,9 +22,6 @@ type state
   ParsingList(parent: state, current: buffer<json> = buffer())
   ParsingString(parent: state, current: buffer<char> = buffer(), escape: bool = False)
   ParsingNum(parent: state, current: buffer<char> = buffer())
-
-fun pair/show(pair: (string, json)): string
-  pair.fst.show ++ ": " ++ pair.snd.show
 
 fun show(state: state): string
   match state

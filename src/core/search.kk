@@ -25,7 +25,7 @@ pub fun search(index: index, query: string): <exn> list<result>
     .tokenize
     .flatmap-maybe(fn(token) -> index.terms.get(token))
     .map(fn(term_index) -> scores(term_index, index.docs.length, index.normalizers))
-    .foldl(empty-map(), fn (s1, s2) -> merge(s1, s2, (+)))
+    .foldl(empty-map(), fn (s1, s2) -> merge(s1, s2, float64/(+)))
     .to-list
     .sort(?(<) = fn((_, score1), (_, score2)) -> score1 > score2)
     .flatmap-maybe(fn((doc_id, _)) -> index.docs.at(doc_id))

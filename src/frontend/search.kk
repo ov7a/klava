@@ -28,16 +28,11 @@ fun layout(query_id: string, results_id: string): component
         h1
           text("Blog search")
         p  
-          // input helper can't be extened to have extra attrs
-          classcomponent("input")
-            add-attrs([
-              ("id", query_id),
-              ("name", "query"),
-              ("type", "text"),
-              ("placeholder", "Type to search..."),
-              // I don't want an extra css file just for that
-              ("style", "width: 100%")
-            ])
+          input("query", "text", "")
+            add-attr("id", query_id)
+            add-attr("placeholder", "Type to search...")
+            // I don't want an extra css file just for that
+            add-attr("style", "width: 100%")
         div
           add-attr("id", results_id)  
 
