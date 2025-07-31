@@ -28,7 +28,7 @@ pub fun serialize(index: index): string
   index.to-json.show
 
 fun term_index/from-json(j: json, path: string): pure term_index
-  val obj = j.as-object(path) 
+  val obj = j.as-object(path)
   Term_index(
     total = obj.dict/from-json("total", "total"),
     docs = obj.dict/from-json("docs", "docs")

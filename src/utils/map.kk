@@ -4,7 +4,7 @@ import std/core/list
 pub alias map = rbmap
 
 pub fun to-map<k, v>(pairs: list<(k, v)>, ^?order2: (k,k) -> e order2<k>): e map<k, v>
-  pairs.foldl(rb-map/empty(), fn(acc, (k, v)) -> acc.add(k, v))
+  pairs.foldl(rb-map/empty(), fn(acc, (k, v)) acc.add(k, v))
 
 pub fun get<k, v>(m: map<k, v>, k: k, ^?order2: (k,k) -> e order2<k>): e maybe<v>
   m.lookup(k)
@@ -27,8 +27,8 @@ pub fun merge<k, v>(
   merger: (v, v) -> e v, 
   ^?order2: (k,k) -> e order2<k>
 ): e map<k, v>
-  other.list.foldl(m, fn(current, (k, new)) -> 
-    current.insert(k, fn(existing) -> 
+  other.list.foldl(m, fn(current, (k, new))
+    current.insert(k, fn(existing)
       match existing
         Just(old) -> merger(old, new)
         Nothing -> new

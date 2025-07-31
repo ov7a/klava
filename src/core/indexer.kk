@@ -17,7 +17,7 @@ fun update_terms(
   terms: list<token>, 
   score: score
 ): map<token, term_index>
-  val terms_map = terms.map(fn(token) -> (
+  val terms_map = terms.map(fn(token) (
     token,
     Term_index(
       total = score, 
@@ -25,7 +25,7 @@ fun update_terms(
     )
   )).to-map
 
-  current.merge(terms_map, fn(ti1, ti2) ->
+  current.merge(terms_map, fn(ti1, ti2)
     Term_index(
       total = ti1.total + ti2.total,
       docs = ti1.docs.merge(ti2.docs, int/(+))
@@ -62,7 +62,7 @@ fun get_len_normalizers(pages: list<page>): vector<float64>
 
 pub fun index(pages: list<page>): index
   val docs = pages.vector.map(to_doc)
-  val terms = pages.map-indexed(fn(idx, page) -> (idx, page)).foldl(empty-map(), update_index)
+  val terms = pages.map-indexed((_, _)).foldl(empty-map(), update_index)
   val normalizers = pages.get_len_normalizers()
 
   Index(

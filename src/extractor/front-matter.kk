@@ -22,7 +22,7 @@ fun parse_header(header: string): <exn> map<string, string>
 
   header
     .split("\n")
-    .filter(fn(line) -> line.contains(":"))
+    .filter(_.contains(":"))
     .map(parse_header_line) 
     .to-map
 

@@ -31,7 +31,7 @@ fun convert(post: path): <exn, fsys> page
 fun extract_pages(dir: path): <exn, fsys, div> list<page>
   list-directory-recursive(dir)
     .filter(is-file)
-    .filter(fn(f) f.extname.to-lower == "md" )
+    .filter(_.extname.to-lower == "md")
     .map(convert)
 
 fun extract_pages_from(paths: list<path>): <exn, fsys, div> list<page>

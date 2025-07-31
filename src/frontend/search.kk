@@ -80,6 +80,6 @@ pub fun main()
   trace("index loaded")
 
   set_output(search_container_id, layout(query_id, results_id).show)
-  add_listener(query_id, "input") fn(event: any) ->
+  add_listener(query_id, "input") fn(event: any)
     val value = Jsobject(event).get-obj("target").get-string("value")
     update_items(results_id, index, value)
