@@ -1,5 +1,5 @@
 import std/async/async
-import libs/html/html
+import html/html
 import std/jsextern
 
 import utils/http
