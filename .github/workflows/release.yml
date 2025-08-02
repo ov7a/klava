@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  KOKA_VERSION: 3.2.2
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Cache Koka setup
+        id: cache-koka
+        uses: actions/cache@v4
+        with:
+          key: koka-setup-${{ env.KOKA_VERSION }}
+          path: |
+            ./koka-compiler
+
+      - name: Setup Koka
+        if: steps.cache-koka.outputs.cache-hit != 'true'
+        run: |
+          curl -sSL https://github.com/koka-lang/koka/releases/download/v${{ env.KOKA_VERSION }}/install.sh > install-koka.sh
+          sudo sh install-koka.sh -- --prefix=$PWD/koka-compiler       
+      
+      - name: Setup Koka path
+        run: |
+          echo "$PWD/koka-compiler/bin" >> $GITHUB_PATH
+
+      - name: Build
+        run: |
+          ./install_libs.sh
+          mkdir -p build
+
+          koka -c src/extractor/extract.kk -i./src -i./libs --target=c --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) -O3 -obuild/indexer
+          chmod +x build/indexer
+
+          koka -c src/frontend/search.kk -i./src -i./libs --target=js -O3
+          tar -czf build/frontend.tar.gz .koka/*/js-drelease*/*.mjs
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/indexer
+            build/frontend.tar.gz
+
+          
