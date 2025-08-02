@@ -36,22 +36,40 @@ jobs:
         run: |
           echo "$PWD/koka-compiler/bin" >> $GITHUB_PATH
 
+      # I don't want to create package.json or yarn.lock to support actions/setup-node
+      - name: Cache JS minifier
+        id: cache-js-minify
+        uses: actions/cache@v4
+        with:
+          key: js-minifier
+          path: |
+            ./node_modules
+
+      - name: Setup JS minifier
+        if: steps.cache-js-minify.outputs.cache-hit != 'true'
+        run: |
+          npm install --save-dev rollup @rollup/plugin-terser
+
       - name: Build
         run: |
           ./install_libs.sh
           mkdir -p build
 
-          koka -c src/extractor/extract.kk -i./src -i./libs --target=c --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) -O3 -obuild/indexer
+          koka -c src/extractor/extract.kk -i./src -i./libs --target=c -O3 \
+            --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) \
+            --ccopts="-ffunction-sections -fdata-sections -fomit-frame-pointer" --cclinkopts="-Wl,--gc-sections,-s" \
+            -obuild/indexer
           chmod +x build/indexer
 
           koka -c src/frontend/search.kk -i./src -i./libs --target=js -O3
-          tar -czf build/frontend.tar.gz .koka/*/js-drelease*/*.mjs
+          npx rollup .koka/*/js-drelease*/frontend_search__main.mjs --file build/search.min.mjs --format esm --plugin @rollup/plugin-terser
+
+          tar -czvf build/release.tar.gz -C build indexer search.min.mjs
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/indexer
-            build/frontend.tar.gz
+            build/release.tar.gz
 
           
