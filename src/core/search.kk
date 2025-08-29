@@ -20,12 +20,28 @@ fun scores(term_index: term_index, total_docs: int, normalizers: vector<float64>
     .kmap-values fn(doc_id, score)
       bm25(score, total_docs, term_index.total, normalizers.at(doc_id).default(0.0))
 
+// prefix variable name causes an error, see https://github.com/koka-lang/koka/issues/796
+fun prefix_search(m: map<string, v>, prefx: string): list<v>
+  m.successors-matching(prefx, _.starts-with(prefx).is-just)
+
 pub fun search(index: index, query: string): <exn> list<result>
-  query
+  val tokens = query
     .tokenize
+
+  val exacth_matches = tokens  
     .flatmap-maybe(index.terms.get(_))
     .map(scores(_, index.docs.length, index.normalizers))
+
+  val prefix_matches = tokens
+    .last.list
+    .flatmap(index.terms.prefix_search(_))
+    .map fn(term_index)
+      scores(term_index, index.docs.length, index.normalizers)
+        .map-values(_ / 2.0) // lower importance for prefix matches
+
+  (exacth_matches ++ prefix_matches)    
     .foldl(empty-map(), merge(_, _, float64/(+)))
     .to-list
     .sort(?(<) = fn((_, score1), (_, score2)) score1 > score2)
     .flatmap-maybe(fn((doc_id, _)) index.docs.at(doc_id))
+    
