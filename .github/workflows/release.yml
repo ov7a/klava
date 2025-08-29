@@ -54,6 +54,13 @@ jobs:
         run: |
           ./install_libs.sh
           mkdir -p build
+          
+          tests_output=$( koka -i./src/ -i./libs/ -e libs/std/test/detect.kk -- \
+            --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) \
+            -i./src -i./libs )
+          # workaround for https://github.com/koka-lang/koka/issues/797  
+          echo ${tests_output}
+          echo ${tests_output} | grep -qvi "failed"  
 
           koka -c src/extractor/extract.kk -i./src -i./libs --target=c -O3 \
             --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) \
