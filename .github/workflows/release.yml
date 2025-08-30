@@ -54,21 +54,21 @@ jobs:
         run: |
           ./install_libs.sh
           mkdir -p build
+
+          SOURCES="-i./src/ -i./libs/"
+          CCLIBS="--cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a))"
           
-          tests_output=$( koka -i./src/ -i./libs/ -e libs/std/test/detect.kk -- \
-            --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) \
-            -i./src -i./libs )
+          tests_output=$( koka $SOURCES $CCLIBS -e libs/std/test/detect.kk -- $SOURCES $CCLIBS )
           # workaround for https://github.com/koka-lang/koka/issues/797  
           printf '%s\n' "${tests_output}"
           echo ${tests_output} | grep -qvi "failed"  
 
-          koka -c src/extractor/extract.kk -i./src -i./libs --target=c -O3 \
-            --cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a)) \
+          koka -c src/extractor/extract.kk $SOURCES $CCLIBS --target=c -O3 \
             --ccopts="-ffunction-sections -fdata-sections -fomit-frame-pointer" --cclinkopts="-Wl,--gc-sections,-s" \
             -obuild/indexer
           chmod +x build/indexer
 
-          koka -c src/frontend/search.kk -i./src -i./libs --target=js -O3
+          koka -c src/frontend/search.kk $SOURCES --target=js -O3
           npx rollup .koka/*/js-drelease*/frontend_search__main.mjs --file build/search.min.mjs --format esm --plugin @rollup/plugin-terser
 
           tar -czvf build/release.tar.gz -C build indexer search.min.mjs
