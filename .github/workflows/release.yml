@@ -58,7 +58,7 @@ jobs:
           SOURCES="-i./src/ -i./libs/"
           CCLIBS="--cclibdir=$(dirname $(g++ --print-file-name=libstdc++.a)) --cclibdir=$(dirname $(g++ --print-file-name=libicuuc.a))"
           
-          tests_output=$( koka $SOURCES $CCLIBS -e libs/std/test/detect.kk -- $SOURCES $CCLIBS )
+          tests_output=$( koka $SOURCES $CCLIBS -v0 -e libs/std/test/detect.kk -- -v0 $SOURCES $CCLIBS )
           # workaround for https://github.com/koka-lang/koka/issues/797  
           printf '%s\n' "${tests_output}"
           echo ${tests_output} | grep -qvi "failed"  
