@@ -40,6 +40,7 @@ fun ru-stem(original: token): token
     .trim-any-ending(rv_start, ["н"], fn(_, vv) vv.at(-2) == Just('н'))
     .trim-any-ending(rv_start, ["ь"])
     .string
+    .replace-all("ё", "е")
 
 val vowels = ['а', 'е', 'и', 'о', 'у', 'ы', 'э', 'ю', 'я']
 
