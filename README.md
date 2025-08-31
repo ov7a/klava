@@ -8,9 +8,11 @@ Please do not use this in production :)
 
 In code, you can find:
 - bag-of-words search engine with [BM25 scoring](./src/core/search.kk)
+- [Snowball stemmer](./src/core/stem.kk) for Russian language
 - [data-extractor](./src/extractor/) from front-matter files (no markdown parsing)
 - almost zero-JS [frontend](./src/frontend/)
 - "purely-functional" self-written [json parser](./src/utils/json.kk)
+- [string view](./src/utils/string-view.kk) with a weird set of methods
 - [C code](./src/utils/unicode_ops.c) to implement unicode lowercase (sic!)
 - dumb [package manager](./install_libs.sh)
 

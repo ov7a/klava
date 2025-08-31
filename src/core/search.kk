@@ -28,7 +28,8 @@ pub fun search(index: index, query: string): <exn> list<result>
   val tokens = query
     .tokenize
 
-  val exacth_matches = tokens  
+  val exact_matches = tokens
+    .map(stem)
     .flatmap-maybe(index.terms.get(_))
     .map(scores(_, index.docs.length, index.normalizers))
 
@@ -39,7 +40,7 @@ pub fun search(index: index, query: string): <exn> list<result>
       scores(term_index, index.docs.length, index.normalizers)
         .map-values(_ / 2.0) // lower importance for prefix matches
 
-  (exacth_matches ++ prefix_matches)    
+  (exact_matches ++ prefix_matches)    
     .foldl(empty-map(), merge(_, _, float64/(+)))
     .to-list
     .sort(?(<) = fn((_, score1), (_, score2)) score1 > score2)

@@ -23,9 +23,9 @@ fun convert(post: path): <exn, fsys> page
     url = "/" ++ path_to_url(post), 
     title = data.title,
     tags = data.tags,
-    tags_tokens = data.tags,
-    title_tokens = data.title.tokenize,
-    body_tokens = data.body.tokenize
+    tags_tokens = data.tags.map(stem),
+    title_tokens = data.title.tokenize.map(stem),
+    body_tokens = data.body.tokenize.map(stem)
   )
 
 fun extract_pages(dir: path): <exn, fsys, div> list<page>
